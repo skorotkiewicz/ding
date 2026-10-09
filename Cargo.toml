@@ -2,5 +2,8 @@
 name = "bpew"
 version = "0.1.0"
 edition = "2024"
+description = "Looping audio notifications for your terminal"
 
 [dependencies]
+clap = { version = "4.6", features = ["derive"] }
+rodio = { version = "0.22", default-features = false, features = ["playback"] }
