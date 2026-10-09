@@ -43,6 +43,7 @@ jobs:
         run: |
           mkdir dist
           cp target/${{ matrix.target }}/release/ding dist/ding
+          cp target/${{ matrix.target }}/release/dong dist/dong
           cp README.md dist/README.md
           tar czf "ding-${GITHUB_REF_NAME}-${{ matrix.target }}.tar.gz" -C dist .
 
@@ -52,6 +53,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path dist
           Copy-Item target\${{ matrix.target }}\release\ding.exe dist\ding.exe
+          Copy-Item target\${{ matrix.target }}\release\dong.exe dist\dong.exe
           Copy-Item README.md dist\README.md
           Compress-Archive -Path dist\* -DestinationPath "ding-${env:GITHUB_REF_NAME}-${{ matrix.target }}.zip"
 

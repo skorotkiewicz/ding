@@ -3,6 +3,15 @@ name = "ding"
 version = "0.1.0"
 edition = "2024"
 description = "Looping audio notifications for your terminal"
+default-run = "ding"
+
+[[bin]]
+name = "ding"
+path = "src/main.rs"
+
+[[bin]]
+name = "dong"
+path = "src/bin/dong.rs"
 
 [dependencies]
 clap = { version = "4.6", features = ["derive"] }

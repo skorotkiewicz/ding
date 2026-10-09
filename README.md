@@ -23,8 +23,9 @@ sudo pacman -S alsa-lib pkgconf
 cargo install --path . --locked
 ```
 
-The executable goes in `~/.cargo/bin`. Playback uses the default system audio
-output through Rodio. macOS and Windows do not need the Linux packages above.
+Both `ding` and `dong` are installed in `~/.cargo/bin` and behave identically.
+Playback uses the default system audio output through Rodio. macOS and Windows
+do not need the Linux packages above.
 
 ## Use
 

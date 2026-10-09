@@ -3,12 +3,14 @@ use std::{f32::consts::TAU, io::IsTerminal, num::NonZero, process::ExitCode, tim
 use clap::{Parser, ValueEnum};
 use rodio::{DeviceSinkBuilder, Player, Source, buffer::SamplesBuffer};
 
+const BIN_NAME: &str = env!("CARGO_BIN_NAME");
 const SAMPLE_RATE: u32 = 48_000;
 const NOTE_GAP: usize = SAMPLE_RATE as usize / 25;
 const LOOP_GAP: usize = SAMPLE_RATE as usize * 2;
 
 #[derive(Parser)]
 #[command(
+    name = BIN_NAME,
     version,
     about = "Audio notifications. Loops by default; Ctrl+C stops playback.",
     after_help = "Examples:\n  wget -c http://example.com/big.zip ; ding\n  ding --preset arcade --once\n  ding --preset gentle --duration 10 --volume 0.2"
@@ -154,7 +156,7 @@ fn run(args: Args) -> Result<(), String> {
     player.set_volume(args.volume);
     player.append(audio(&args));
     if !args.once && args.duration.is_none() && std::io::stderr().is_terminal() {
-        eprintln!("ding: looping with a two-second pause; Ctrl+C to stop");
+        eprintln!("{BIN_NAME}: looping with a two-second pause; Ctrl+C to stop");
     }
     // Keep both the output device and player alive until playback finishes.
     player.sleep_until_end();
@@ -165,7 +167,7 @@ fn main() -> ExitCode {
     match run(Args::parse()) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("ding: {error}");
+            eprintln!("{BIN_NAME}: {error}");
             ExitCode::FAILURE
         }
     }
@@ -174,9 +176,11 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clap::CommandFactory;
 
     #[test]
     fn cli_and_audio() {
+        assert_eq!(Args::command().get_name(), BIN_NAME);
         let defaults = Args::try_parse_from(["ding"]).unwrap();
         assert!(!defaults.once && defaults.duration.is_none());
         assert_eq!(defaults.volume, 0.6);

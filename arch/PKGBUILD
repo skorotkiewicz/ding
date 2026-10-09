@@ -20,5 +20,6 @@ sha256sums_aarch64=('SKIP')
 
 package() {
   install -Dm755 ding "$pkgdir/usr/bin/ding"
+  install -Dm755 dong "$pkgdir/usr/bin/dong"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
 }
