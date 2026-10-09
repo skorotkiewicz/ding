@@ -1,5 +1,5 @@
 [package]
-name = "bpew"
+name = "ding"
 version = "0.1.0"
 edition = "2024"
 description = "Looping audio notifications for your terminal"

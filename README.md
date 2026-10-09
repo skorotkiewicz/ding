@@ -1,9 +1,9 @@
-# bpew
+# ding
 
 Play a terminal audio notification. No sound files required.
 
-`bpew` loops a three-note chime with a two-second pause between repetitions.
-Press Ctrl+C to stop. Default volume is 35%.
+`ding` loops a three-note chime with a two-second pause between repetitions.
+Press Ctrl+C to stop. Default volume is 60%.
 
 ## Install
 
@@ -30,22 +30,22 @@ output through Rodio. macOS and Windows do not need the Linux packages above.
 
 ```sh
 # Notify after the command finishes, whether it succeeds or fails
-wget -c http://example.com/big.zip ; bpew
+wget -c http://example.com/big.zip ; ding
 
 # Notify only on success, just once
-cargo build --release && bpew --preset success --once
+cargo build --release && ding --preset success --once
 
 # Repeat an arcade tune for 10 seconds
-bpew --preset arcade --duration 10
+ding --preset arcade --duration 10
 
 # Quieter, gentle reminder for 2.5 seconds
-bpew -p gentle -d 2.5 -v 0.2
+ding -p gentle -d 2.5 -v 0.2
 
 # A more urgent notification
-bpew -p alarm
+ding -p alarm
 
-bpew --list
-bpew --help
+ding --list
+ding --help
 ```
 
 Presets: `chime`, `success`, `arcade`, `alarm`, `gentle`.

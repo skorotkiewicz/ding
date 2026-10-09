@@ -11,7 +11,7 @@ const LOOP_GAP: usize = SAMPLE_RATE as usize * 2;
 #[command(
     version,
     about = "Audio notifications. Loops by default; Ctrl+C stops playback.",
-    after_help = "Examples:\n  wget -c http://example.com/big.zip ; bpew\n  bpew --preset arcade --once\n  bpew --preset gentle --duration 10 --volume 0.2"
+    after_help = "Examples:\n  wget -c http://example.com/big.zip ; ding\n  ding --preset arcade --once\n  ding --preset gentle --duration 10 --volume 0.2"
 )]
 struct Args {
     /// Melody to play
@@ -27,7 +27,7 @@ struct Args {
     duration: Option<Duration>,
 
     /// Volume from 0 to 1
-    #[arg(short, long, default_value = "0.35", value_parser = parse_volume)]
+    #[arg(short, long, default_value = "0.6", value_parser = parse_volume)]
     volume: f32,
 
     /// List presets without opening an audio device
@@ -154,7 +154,7 @@ fn run(args: Args) -> Result<(), String> {
     player.set_volume(args.volume);
     player.append(audio(&args));
     if !args.once && args.duration.is_none() && std::io::stderr().is_terminal() {
-        eprintln!("bpew: looping with a two-second pause; Ctrl+C to stop");
+        eprintln!("ding: looping with a two-second pause; Ctrl+C to stop");
     }
     // Keep both the output device and player alive until playback finishes.
     player.sleep_until_end();
@@ -165,7 +165,7 @@ fn main() -> ExitCode {
     match run(Args::parse()) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("bpew: {error}");
+            eprintln!("ding: {error}");
             ExitCode::FAILURE
         }
     }
@@ -177,17 +177,17 @@ mod tests {
 
     #[test]
     fn cli_and_audio() {
-        let defaults = Args::try_parse_from(["bpew"]).unwrap();
+        let defaults = Args::try_parse_from(["ding"]).unwrap();
         assert!(!defaults.once && defaults.duration.is_none());
-        assert_eq!(defaults.volume, 0.35);
+        assert_eq!(defaults.volume, 0.6);
         for seconds in ["0", "-1", "NaN", "inf", "1e100", "nope"] {
-            assert!(Args::try_parse_from(["bpew", "--duration", seconds]).is_err());
+            assert!(Args::try_parse_from(["ding", "--duration", seconds]).is_err());
         }
         for volume in ["-0.1", "1.1", "NaN", "inf", "nope"] {
-            assert!(Args::try_parse_from(["bpew", "--volume", volume]).is_err());
+            assert!(Args::try_parse_from(["ding", "--volume", volume]).is_err());
         }
-        assert!(Args::try_parse_from(["bpew", "--preset", "missing"]).is_err());
-        assert!(Args::try_parse_from(["bpew", "--list"]).unwrap().list);
+        assert!(Args::try_parse_from(["ding", "--preset", "missing"]).is_err());
+        assert!(Args::try_parse_from(["ding", "--list"]).unwrap().list);
         assert_eq!(parse_duration("2.5").unwrap(), Duration::from_millis(2500));
         assert_eq!(parse_volume("0").unwrap(), 0.0);
         assert_eq!(parse_volume("1").unwrap(), 1.0);
@@ -205,7 +205,7 @@ mod tests {
             let args = Args {
                 preset,
                 once: true,
-                ..Args::try_parse_from(["bpew"]).unwrap()
+                ..Args::try_parse_from(["ding"]).unwrap()
             };
             assert_eq!(audio(&args).count(), samples.len());
         }
@@ -222,7 +222,7 @@ mod tests {
         assert_eq!(&repeated[cycle..], samples.as_slice());
 
         for extra in [vec![], vec!["--once"]] {
-            let args = Args::try_parse_from(["bpew", "--duration", "0.1"].into_iter().chain(extra))
+            let args = Args::try_parse_from(["ding", "--duration", "0.1"].into_iter().chain(extra))
                 .unwrap();
             assert_eq!(audio(&args).count(), SAMPLE_RATE as usize / 10);
         }
