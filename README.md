@@ -3,7 +3,7 @@
 Play a terminal audio notification. No sound files required.
 
 `ding` loops a three-note chime with a two-second pause between repetitions.
-Press Ctrl+C to stop. Default volume is 60%.
+Press Ctrl+C to stop. `dong` plays the chime once and exits. Default volume is 60%.
 
 ## Install
 
@@ -23,7 +23,7 @@ sudo pacman -S alsa-lib pkgconf
 cargo install --path . --locked
 ```
 
-Both `ding` and `dong` are installed in `~/.cargo/bin` and behave identically.
+Both `ding` and `dong` are installed in `~/.cargo/bin`.
 Playback uses the default system audio output through Rodio. macOS and Windows
 do not need the Linux packages above.
 
@@ -32,6 +32,9 @@ do not need the Linux packages above.
 ```sh
 # Notify after the command finishes, whether it succeeds or fails
 wget -c http://example.com/big.zip ; ding
+
+# Notify once after the command finishes
+cargo build --release ; dong
 
 # Notify only on success, just once
 cargo build --release && ding --preset success --once
@@ -52,9 +55,9 @@ ding --help
 Presets: `chime`, `success`, `arcade`, `alarm`, `gentle`.
 
 `--duration` is a maximum total playback time in seconds, including loop pauses.
-It accepts positive decimals. With `--once`, the melody ends naturally or at the
-duration limit, whichever comes first. Without either option, playback continues
-until you interrupt it. `--volume` accepts values from 0 to 1.
+It accepts positive decimals. With `dong` or `ding --once`, the melody ends
+naturally or at the duration limit, whichever comes first. With neither option,
+`ding` continues until you interrupt it. `--volume` accepts values from 0 to 1.
 
 The command stays in the foreground while playing. It needs a working audio
 session, so a headless server or SSH session without audio output will report an

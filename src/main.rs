@@ -12,7 +12,11 @@ const LOOP_GAP: usize = SAMPLE_RATE as usize * 2;
 #[command(
     name = BIN_NAME,
     version,
-    about = "Audio notifications. Loops by default; Ctrl+C stops playback.",
+    about = if BIN_NAME == "dong" {
+        "Audio notifications. Plays once and exits."
+    } else {
+        "Audio notifications. Loops by default; Ctrl+C stops playback."
+    },
     after_help = "Examples:\n  wget -c http://example.com/big.zip ; ding\n  ding --preset arcade --once\n  ding --preset gentle --duration 10 --volume 0.2"
 )]
 struct Args {
@@ -20,8 +24,8 @@ struct Args {
     #[arg(short, long, value_enum, default_value = "chime")]
     preset: Preset,
 
-    /// Play the melody once instead of looping
-    #[arg(short, long)]
+    /// Play the melody once (the default for dong)
+    #[arg(short, long, default_value_t = BIN_NAME == "dong")]
     once: bool,
 
     /// Stop after this many seconds, including pauses; accepts decimals
@@ -182,7 +186,8 @@ mod tests {
     fn cli_and_audio() {
         assert_eq!(Args::command().get_name(), BIN_NAME);
         let defaults = Args::try_parse_from(["ding"]).unwrap();
-        assert!(!defaults.once && defaults.duration.is_none());
+        assert_eq!(defaults.once, BIN_NAME == "dong");
+        assert!(defaults.duration.is_none());
         assert_eq!(defaults.volume, 0.6);
         for seconds in ["0", "-1", "NaN", "inf", "1e100", "nope"] {
             assert!(Args::try_parse_from(["ding", "--duration", seconds]).is_err());
@@ -217,6 +222,14 @@ mod tests {
         let samples = melody(defaults.preset);
         let cycle = samples.len() + LOOP_GAP;
         let repeated: Vec<_> = audio(&defaults).take(cycle + samples.len()).collect();
+        if BIN_NAME == "dong" {
+            assert_eq!(repeated, samples, "dong should play exactly one melody");
+        }
+        let looping = Args {
+            once: false,
+            ..defaults
+        };
+        let repeated: Vec<_> = audio(&looping).take(cycle + samples.len()).collect();
         assert_eq!(&repeated[..samples.len()], samples.as_slice());
         assert!(
             repeated[samples.len()..cycle]
